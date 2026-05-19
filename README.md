@@ -1,12 +1,16 @@
+<img src="images/neteclogo (2).png" alt="logo" width="300"/>
+
 # IA Generativa en Ciberseguridad Avanzada
+
+## Plataforma de laboratorios
+
+Te damos la bienvenida a la **plataforma de laboratorios** del curso **IA Generativa en Ciberseguridad Avanzada**. Aquí podrás explorar diferentes tecnologías a través de prácticas guiadas. ¡Desarrolla tus habilidades y lleva tus conocimientos al siguiente nivel!
 
 Curso avanzado orientado al diseño e implementación de guardrails y controles de seguridad a nivel de software para sistemas basados en LLM, utilizando herramientas open source y servicios cloud de AWS y Azure, con enfoque en defensa en profundidad, RAG seguro, validación de IO, observabilidad y red teaming.
 
-## Estructura
-
-- `CapituloXX/README.md`: guía de laboratorio por capítulo.
-
 ## Lista de laboratorios
+
+Cada uno de estos laboratorios está diseñado para ofrecerte una experiencia práctica. Haz clic en los enlaces para comenzar.
 
 ### Capítulo 1
 
@@ -56,8 +60,11 @@ Curso avanzado orientado al diseño e implementación de guardrails y controles 
   - Descripción: Actividad práctica guiada basada estrictamente en el contenido del módulo.
   - Duración estimada: 40 min
 
-## Flujo de colaboración
 
-- Trabajar en `changes_course`.
-- Crear Pull Request hacia `main`.
-- Merge por `Squash and merge`.
+## 📬 **Contacto y más información**
+
+
+Si tienes alguna pregunta o necesitas más detalles, no dudes en [contactarnos](mailto:soporte@netec.com). También puedes encontrar más recursos en nuestra [página](https://netec.com).
+
+
+¡Gracias por visitar nuestra plataforma! No olvides revisar todos los laboratorios y comenzar tu viaje de aprendizaje hoy mismo.
