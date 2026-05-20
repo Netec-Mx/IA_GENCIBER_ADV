@@ -1,4 +1,4 @@
-# Crear suite básica de evaluación automática para RAG + detección de degradación
+# Práctica 6: Crear suite básica de evaluación automática para RAG + detección de degradación
 
 ## 1. Metadatos
 
