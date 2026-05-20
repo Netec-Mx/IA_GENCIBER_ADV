@@ -1,4 +1,4 @@
-# Integrar LLM Guard + Presidio en un gateway mock y bloquear PII + injection
+# Práctica 3: Integrar LLM Guard + Presidio en un gateway mock y bloquear PII + injection
 
 ## 1. Metadatos
 
