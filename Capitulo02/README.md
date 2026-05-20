@@ -1,4 +1,4 @@
-# Configurar un guardrail en Bedrock o Foundry y validar bloqueo de prompt injection
+# Práctica 2: Configurar un guardrail en Bedrock o Foundry y validar bloqueo de prompt injection
 
 ## 1. Metadatos
 
