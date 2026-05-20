@@ -1,10 +1,10 @@
-# Construcción de matriz de riesgos basada en OWASP + ATLAS para un caso bancario
+# Práctica 1: Construcción de matriz de riesgos basada en OWASP + ATLAS para un caso bancario
 
 ## 1. Metadatos
 
 | Campo            | Detalle                                      |
 |------------------|----------------------------------------------|
-| **Duración**     | 25 minutos                                   |
+| **Duración**     | 20 minutos                                   |
 | **Complejidad**  | Media                                        |
 | **Nivel Bloom**  | Crear (*Create*)                             |
 | **Modalidad**    | Teórico-práctica (sin despliegue de infra)   |
