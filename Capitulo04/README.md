@@ -1,4 +1,4 @@
-# Desplegar LiteLLM + OPA y restringir acceso a modelos según rol
+# Práctica 4: Desplegar LiteLLM + OPA y restringir acceso a modelos según rol
 
 ## Metadatos
 
