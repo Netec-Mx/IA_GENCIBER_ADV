@@ -1,4 +1,4 @@
-# Configurar n8n con credenciales seguras usando variables de entorno en Docker y protegerlo con un reverse proxy Nginx con TLS
+# Práctica 8: Configurar n8n con credenciales seguras usando variables de entorno en Docker y protegerlo con un reverse proxy Nginx con TLS
 
 ## Metadatos
 
