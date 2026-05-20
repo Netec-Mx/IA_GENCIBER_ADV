@@ -1,7 +1,4 @@
----LAB_START---
-LAB_ID: 07-00-01
----MARKDOWN---
-# Ejecutar pruebas con garak o PyRIT contra el gateway y medir reducción de attack success rate
+# Práctica 7: Ejecutar pruebas con garak o PyRIT contra el gateway y medir reducción de attack success rate
 
 ## 1. Metadatos
 
@@ -1396,5 +1393,4 @@ En este laboratorio has completado un ciclo completo de red teaming automatizado
 
 > **⚠️ Aviso legal:** Todos los datos bancarios utilizados en este laboratorio (Banco Ficticio S.A., IBANs con prefijo XX99, cliente FICTICIO-001) son completamente inventados y no corresponden a ninguna entidad real. Los payloads de ataque son sintéticos y diseñados exclusivamente para entornos de prueba controlados.
 
----
-LAB_END---
+
