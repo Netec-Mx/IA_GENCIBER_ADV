@@ -1,4 +1,4 @@
-# Pipeline seguro de ingestión → validación → indexación con RBAC activo
+# Práctica 5: Pipeline seguro de ingestión → validación → indexación con RBAC activo
 
 ## 1. Metadatos
 
