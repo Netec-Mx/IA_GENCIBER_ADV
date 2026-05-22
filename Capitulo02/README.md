@@ -1,6 +1,3 @@
-https://contentbancolombia.cognitiveservices.azure.com/
-BmYmgdfw9SinqhZxPqacJ7rpctdySJvqAhjLfzVwJKouOyZ1NNZCJQQJ99CEACYeBjFXJ3w3AAAHACOGepFH
-
 # Práctica 2: Configurar un guardrail en Bedrock o Foundry y validar bloqueo de prompt injection
 
 ## 1. Metadatos
