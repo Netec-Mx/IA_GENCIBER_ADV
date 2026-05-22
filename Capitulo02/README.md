@@ -74,7 +74,7 @@ En este laboratorio configurarás guardrails de seguridad funcionales en **Amazo
 
 **Paso 0.1 – Crear estructura de directorios y entorno virtual:**
 
-```bash
+```powershell
 # Crear carpeta principal
 mkdir lab-02-guardrails
 
@@ -91,7 +91,7 @@ py -3.11 -m venv .venv
 
 # Activar entorno virtual
 .\.venv\Scripts\Activate```
-
+```
 **Paso 0.2 – Instalar dependencias (versiones fijadas):**
 
 ```powershell
@@ -103,16 +103,14 @@ python-dotenv==1.0.1
 requests==2.31.0
 tabulate==0.9.0
 "@ | Set-Content requirements.txt
-```
-
 
 pip install -r requirements.txt
 ```
 
 **Paso 0.3 – Crear archivo `.env` con credenciales (NO commitear):**
 
-```bash
-cat > .env << 'EOF'
+```powershell
+@"
 # AWS
 AWS_REGION=us-east-1
 AWS_BEDROCK_MODEL_ID=amazon.titan-text-lite-v1
@@ -124,52 +122,24 @@ AZURE_CONTENT_SAFETY_KEY=<TU-API-KEY>
 # Identificadores (se rellenarán durante el lab)
 BEDROCK_GUARDRAIL_ID=
 BEDROCK_GUARDRAIL_VERSION=DRAFT
-EOF
+"@ | Set-Content .env
 ```
 
-```bash
-cat > .gitignore << 'EOF'
+
+
+```powershell
+@"
 .env
 *.env
 .env.*
 __pycache__/
 .venv/
 results/*.json
-EOF
+"@ | Set-Content .gitignore
 ```
 
-**Paso 0.4 – Configurar alertas de facturación (obligatorio):**
 
-```bash
-# AWS: Crear alerta de billing a 10 USD
-aws budgets create-budget \
-  --account-id $(aws sts get-caller-identity --query Account --output text) \
-  --budget '{
-    "BudgetName": "lab02-guardrails-limit",
-    "BudgetLimit": {"Amount": "10", "Unit": "USD"},
-    "TimeUnit": "MONTHLY",
-    "BudgetType": "COST"
-  }' \
-  --notifications-with-subscribers '[{
-    "Notification": {
-      "NotificationType": "ACTUAL",
-      "ComparisonOperator": "GREATER_THAN",
-      "Threshold": 80
-    },
-    "Subscribers": [{"SubscriptionType": "EMAIL", "Address": "tu@email.com"}]
-  }]'
-```
 
-```bash
-# Azure: Crear alerta de coste a 10 EUR
-az consumption budget create \
-  --budget-name "lab02-guardrails-limit" \
-  --amount 10 \
-  --category Cost \
-  --time-grain Monthly \
-  --start-date $(date +%Y-%m-01) \
-  --end-date $(date -d "+1 year" +%Y-%m-01)
-```
 
 ---
 
