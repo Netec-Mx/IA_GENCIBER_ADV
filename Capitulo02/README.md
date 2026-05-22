@@ -94,15 +94,7 @@ py -3.11 -m venv .venv
 
 **Paso 0.2 – Instalar dependencias (versiones fijadas):**
 
-```bash
-cat > requirements.txt << 'EOF'
-boto3==1.34.69
-azure-ai-contentsafety==1.0.0
-azure-identity==1.16.0
-python-dotenv==1.0.1
-requests==2.31.0
-tabulate==0.9.0
-EOF
+@" boto3==1.34.69 azure-ai-contentsafety==1.0.0 azure-identity==1.16.0 python-dotenv==1.0.1 requests==2.31.0 tabulate==0.9.0 "@ | Set-Content requirements.txt
 
 pip install -r requirements.txt
 ```
