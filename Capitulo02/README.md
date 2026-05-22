@@ -4,7 +4,7 @@
 
 | Campo            | Detalle                                      |
 |------------------|----------------------------------------------|
-| **Duración**     | 20 minutos                                   |
+| **Duración**     | 90 minutos                                   |
 | **Complejidad**  | Media                                        |
 | **Nivel Bloom**  | Crear (Create)                               |
 | **Módulo**       | 2 – Guardrails en Proveedores Cloud          |
@@ -92,6 +92,27 @@ py -3.11 -m venv .venv
 # Activar entorno virtual
 .\.venv\Scripts\Activate```
 ```
+
+**Paso 0.11 – Instalar Azure Cli y AWS Cli**
+
+```powershell
+winget install Microsoft.AzureCLI
+```
+```powershell 
+winget install Amazon.AWSCLI
+```
+
+Reinicie Visual Studio Code y verifique que se instalaran correctaamente los clientes.
+
+```powershell 
+aws --version
+```
+
+```powershell 
+az --version
+```
+
+
 **Paso 0.2 – Instalar dependencias (versiones fijadas):**
 
 ```powershell
