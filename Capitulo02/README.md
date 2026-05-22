@@ -94,7 +94,7 @@ mkdir policies
 py -3.11 -m venv .venv
 
 # Activar entorno virtual
-.\.venv\Scripts\Activate```
+.\.venv\Scripts\Activate
 ```
 
 **Paso 0.11 – Instalar Azure Cli y AWS Cli**
