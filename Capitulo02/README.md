@@ -75,12 +75,22 @@ En este laboratorio configurarás guardrails de seguridad funcionales en **Amazo
 **Paso 0.1 – Crear estructura de directorios y entorno virtual:**
 
 ```bash
-mkdir -p ~/lab-02-guardrails/{scripts,results,policies}
-cd ~/lab-02-guardrails
-python3.11 -m venv .venv
-source .venv/bin/activate  # Linux/macOS
-# .venv\Scripts\activate   # Windows WSL2
-```
+# Crear carpeta principal
+mkdir lab-02-guardrails
+
+# Entrar a la carpeta
+cd lab-02-guardrails
+
+# Crear subdirectorios
+mkdir scripts
+mkdir results
+mkdir policies
+
+# Crear entorno virtual
+py -3.11 -m venv .venv
+
+# Activar entorno virtual
+.\.venv\Scripts\Activate```
 
 **Paso 0.2 – Instalar dependencias (versiones fijadas):**
 
