@@ -74,7 +74,9 @@ En este laboratorio configurarás guardrails de seguridad funcionales en **Amazo
 
 **Paso 0.1 – Crear estructura de directorios y entorno virtual:**
 
-Ingrese a Visual Studio Code y abra una Consola en Terminal con PowerShell.
+* En la máquina Virtual, cree una carpeta llamada Lab02 en cualquier ubicación (Escritorio, Descargas, Documentos, etc)
+
+* Ingrese a Visual Studio Code, abra la carpeta creada anteriormente  y abra una Consola en Terminal con PowerShell.
 
 ```powershell
 # Crear carpeta principal
