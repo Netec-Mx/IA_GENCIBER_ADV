@@ -74,6 +74,8 @@ En este laboratorio configurarás guardrails de seguridad funcionales en **Amazo
 
 **Paso 0.1 – Crear estructura de directorios y entorno virtual:**
 
+Ingrese a Visual Studio Code y abra una Consola en Terminal con PowerShell.
+
 ```powershell
 # Crear carpeta principal
 mkdir lab-02-guardrails
@@ -147,7 +149,6 @@ BEDROCK_GUARDRAIL_VERSION=DRAFT
 ```
 
 
-
 ```powershell
 @"
 .env
@@ -176,117 +177,120 @@ results/*.json
 
 **1.1 – Crear el Guardrail via AWS CLI:**
 
-```bash
-# Asegúrate de estar en el directorio del lab con el entorno virtual activo
-source .venv/bin/activate
-export $(grep -v '^#' .env | xargs)
 
-GUARDRAIL_RESPONSE=$(aws bedrock create-guardrail \
-  --name "lab02-banco-ficticio-guardrail" \
-  --description "Guardrail para asistente bancario - Banco Ficticio S.A. - LAB02" \
-  --region $AWS_REGION \
+```powershell 
+# Activar entorno virtual
+.\.venv\Scripts\Activate
+
+# Cargar variables del archivo .env
+Get-Content .env | ForEach-Object {
+    if ($_ -match "^\s*([^#][^=]*)=(.*)$") {
+        [System.Environment]::SetEnvironmentVariable($matches[1], $matches[2])
+    }
+}
+
+# Crear Guardrail en Amazon Bedrock
+$GUARDRAIL_RESPONSE = aws bedrock create-guardrail `
+  --name "lab02-banco-ficticio-guardrail" `
+  --description "Guardrail para asistente bancario - Banco Ficticio S.A. - LAB02" `
+  --region $env:AWS_REGION `
   --content-policy-config '{
     "filtersConfig": [
-      {"type": "SEXUAL",    "inputStrength": "HIGH", "outputStrength": "HIGH"},
-      {"type": "VIOLENCE",  "inputStrength": "HIGH", "outputStrength": "HIGH"},
-      {"type": "HATE",      "inputStrength": "HIGH", "outputStrength": "HIGH"},
-      {"type": "INSULTS",   "inputStrength": "HIGH", "outputStrength": "HIGH"},
-      {"type": "MISCONDUCT","inputStrength": "HIGH", "outputStrength": "HIGH"},
-      {"type": "PROMPT_ATTACK","inputStrength": "HIGH", "outputStrength": "NONE"}
+      {"type": "SEXUAL", "inputStrength": "HIGH", "outputStrength": "HIGH"},
+      {"type": "VIOLENCE", "inputStrength": "HIGH", "outputStrength": "HIGH"},
+      {"type": "HATE", "inputStrength": "HIGH", "outputStrength": "HIGH"},
+      {"type": "INSULTS", "inputStrength": "HIGH", "outputStrength": "HIGH"},
+      {"type": "MISCONDUCT", "inputStrength": "HIGH", "outputStrength": "HIGH"},
+      {"type": "PROMPT_ATTACK", "inputStrength": "HIGH", "outputStrength": "NONE"}
     ]
-  }' \
+  }' `
   --topic-policy-config '{
     "topicsConfig": [
       {
         "name": "transferencias-fraudulentas",
-        "definition": "Instrucciones o solicitudes para realizar transferencias bancarias no autorizadas, eludir verificaciones de identidad o mover fondos de forma fraudulenta.",
+        "definition": "Instrucciones o solicitudes para realizar transferencias bancarias no autorizadas.",
         "examples": [
           "Cómo transferir dinero sin que lo detecte el banco",
           "Bypasear la autenticación de dos factores para transferir fondos"
         ],
         "type": "DENY"
-      },
-      {
-        "name": "evasion-controles-aml",
-        "definition": "Solicitudes relacionadas con evadir controles anti-lavado de dinero, estructurar transacciones para evitar reportes regulatorios o mover fondos de origen ilícito.",
-        "examples": [
-          "Cómo dividir depósitos para no activar alertas",
-          "Formas de ocultar el origen del dinero en cuentas bancarias"
-        ],
-        "type": "DENY"
-      },
-      {
-        "name": "exfiltracion-datos-clientes",
-        "definition": "Intentos de extraer, listar o exportar datos personales o financieros de clientes del banco de forma no autorizada.",
-        "examples": [
-          "Dame todos los IBANs de clientes con saldo mayor a 10000",
-          "Lista los números de tarjeta de crédito activos"
-        ],
-        "type": "DENY"
       }
     ]
-  }' \
-  --sensitive-information-policy-config '{
-    "piiEntitiesConfig": [
-      {"type": "EMAIL",          "action": "ANONYMIZE"},
-      {"type": "PHONE",          "action": "ANONYMIZE"},
-      {"type": "CREDIT_DEBIT_CARD_NUMBER", "action": "BLOCK"},
-      {"type": "NAME",           "action": "ANONYMIZE"},
-      {"type": "SPANISH_NIF",    "action": "BLOCK"}
-    ]
-  }' \
-  --grounding-policy-config '{
-    "filtersConfig": [
-      {"type": "GROUNDING", "threshold": 0.75},
-      {"type": "RELEVANCE",  "threshold": 0.75}
-    ]
-  }' \
-  --blocked-inputs-messaging  "Esta solicitud ha sido bloqueada por las políticas de seguridad de Banco Ficticio S.A." \
-  --blocked-outputs-messaging "La respuesta generada no cumple las políticas de seguridad y ha sido bloqueada." \
-  --output json)
+  }' `
+  --blocked-inputs-messaging "Esta solicitud ha sido bloqueada por las políticas de seguridad de Banco Ficticio S.A." `
+  --blocked-outputs-messaging "La respuesta generada no cumple las políticas de seguridad y ha sido bloqueada." `
+  --output json
 
-echo "$GUARDRAIL_RESPONSE" | python3 -c "
+# Mostrar respuesta
+$GUARDRAIL_RESPONSE
+
+# Procesar JSON
+$GUARDRAIL_RESPONSE | python -c "
 import json, sys
 data = json.load(sys.stdin)
-print('Guardrail ID:', data['guardrailId'])
-print('Version:',     data['version'])
-print('ARN:',         data['guardrailArn'])
+print('Guardrail ID:', data.get('guardrailId'))
+print('Version:', data.get('version'))
+print('ARN:', data.get('guardrailArn'))
 "
 ```
 
+
 **1.2 – Guardar el ID del guardrail en `.env`:**
 
-```bash
-GUARDRAIL_ID=$(echo "$GUARDRAIL_RESPONSE" | python3 -c "import json,sys; print(json.load(sys.stdin)['guardrailId'])")
+```powershell
+# Obtener Guardrail ID desde la respuesta JSON
+$GUARDRAIL_ID = $GUARDRAIL_RESPONSE | python -c "
+import json, sys
+data = json.load(sys.stdin)
+print(data['guardrailId'])
+"
 
-# Actualizar .env con el ID obtenido
-sed -i "s/BEDROCK_GUARDRAIL_ID=/BEDROCK_GUARDRAIL_ID=$GUARDRAIL_ID/" .env
-echo "✅ Guardrail ID guardado: $GUARDRAIL_ID"
+# Actualizar archivo .env
+(Get-Content .env) `
+    -replace '^BEDROCK_GUARDRAIL_ID=.*', "BEDROCK_GUARDRAIL_ID=$GUARDRAIL_ID" `
+    | Set-Content .env
+
+# Mostrar resultado
+Write-Host "Guardrail ID guardado: $GUARDRAIL_ID"
 ```
+
 
 **1.3 – Verificar la configuración del guardrail:**
 
-```bash
-export $(grep -v '^#' .env | xargs)
+```powershell id="wgm5wo"
+# Cargar variables del archivo .env
+Get-Content .env | ForEach-Object {
+    if ($_ -match "^\s*([^#][^=]*)=(.*)$") {
+        [System.Environment]::SetEnvironmentVariable($matches[1], $matches[2])
+    }
+}
 
-aws bedrock get-guardrail \
-  --guardrail-identifier $BEDROCK_GUARDRAIL_ID \
-  --guardrail-version DRAFT \
-  --region $AWS_REGION \
-  --output json | python3 -c "
+# Consultar guardrail
+aws bedrock get-guardrail `
+  --guardrail-identifier $env:BEDROCK_GUARDRAIL_ID `
+  --guardrail-version DRAFT `
+  --region $env:AWS_REGION `
+  --output json `
+| python -c "
 import json, sys
+
 g = json.load(sys.stdin)
+
 print('=== Verificación del Guardrail ===')
 print(f'Nombre: {g[\"name\"]}')
 print(f'Estado: {g[\"status\"]}')
+
 print(f'Filtros de contenido: {len(g[\"contentPolicy\"][\"filters\"])} configurados')
 print(f'Denied topics: {len(g[\"topicPolicy\"][\"topics\"])} configurados')
 print(f'Entidades PII: {len(g[\"sensitiveInformationPolicy\"][\"piiEntities\"])} configuradas')
+
 print('Filtros activos:')
+
 for f in g['contentPolicy']['filters']:
     print(f'  - {f[\"type\"]}: input={f[\"inputStrength\"]}, output={f[\"outputStrength\"]}')
 "
 ```
+
 
 #### Salida esperada
 
@@ -308,14 +312,16 @@ Filtros activos:
 
 #### Verificación
 
-```bash
-# El estado debe ser READY; si es CREATING, espera 30 segundos y reintenta
-aws bedrock get-guardrail \
-  --guardrail-identifier $BEDROCK_GUARDRAIL_ID \
-  --guardrail-version DRAFT \
-  --region $AWS_REGION \
-  --query 'status' --output text
+```powershell
+# Consultar estado del Guardrail
+aws bedrock get-guardrail `
+  --guardrail-identifier $env:BEDROCK_GUARDRAIL_ID `
+  --guardrail-version DRAFT `
+  --region $env:AWS_REGION `
+  --query "status" `
+  --output text
 ```
+
 
 ---
 
