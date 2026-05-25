@@ -1118,6 +1118,7 @@ echo "Contraseña: $(grep N8N_BASIC_AUTH_PASSWORD .env | cut -d'=' -f2)"
 
 2. Crea el workflow HITL importando el siguiente JSON. En n8n, ve a **Workflows > New > Import from JSON** y pega el contenido:
 
+{% raw %}
 ```bash
 cat > workflows/hitl-transfer.json << 'WORKFLOW_EOF'
 {
@@ -1265,6 +1266,8 @@ cat > workflows/hitl-transfer.json << 'WORKFLOW_EOF'
   }
 }
 WORKFLOW_EOF
+```
+{% endraw %}
 
 echo "✅ Archivo de workflow HITL creado en workflows/hitl-transfer.json"
 ```
