@@ -1,4 +1,4 @@
-# Práctica 2: Configurar un guardrail en Bedrock o Foundry y validar bloqueo de prompt injection
+# Práctica 2: Configurar un guardrail en Foundry y validar bloqueo de prompt injection
 
 ## 1. Metadatos
 
@@ -14,9 +14,9 @@
 
 ## 2. Descripción General
 
-En este laboratorio configurarás guardrails de seguridad funcionales en **Amazon Bedrock** y **Azure AI Foundry** aplicando los principios de defensa en profundidad estudiados en la lección 2.1. Ejecutarás un conjunto de 10 payloads categorizados (direct injection, jailbreak, exfiltración de PII e indirect injection) contra ambos proveedores y documentarás las tasas de bloqueo. Finalizarás diseñando una estrategia *defense-in-depth* combinada que justifique técnicamente el uso complementario de ambas plataformas.
+En este laboratorio configurarás guardrails de seguridad funcionales en **Azure AI Foundry** aplicando los principios de defensa en profundidad estudiados en la lección 2.1. Ejecutarás un conjunto de 10 payloads categorizados (direct injection, jailbreak, exfiltración de PII e indirect injection) contra ambos proveedores y documentarás las tasas de bloqueo. Finalizarás diseñando una estrategia *defense-in-depth* combinada que justifique técnicamente el uso complementario de ambas plataformas.
 
-> **⚠️ Aviso de costes:** Este laboratorio realiza llamadas reales a APIs de AWS Bedrock y Azure AI. El coste estimado por alumno es de **0,50–2 USD**. Configura alertas de facturación antes de comenzar (ver Sección 5).
+> **⚠️ Aviso de costes:** Este laboratorio realiza llamadas reales a APIs de Azure AI. El coste estimado por alumno es de **0,50–2 USD**. 
 
 > **📋 Disclaimer de datos:** Todos los datos bancarios utilizados en este laboratorio son completamente ficticios (Banco Ficticio S.A., IBANs con prefijo XX99, NIFs inventados). Ningún dato real debe utilizarse.
 
@@ -47,9 +47,7 @@ En este laboratorio configurarás guardrails de seguridad funcionales en **Amazo
 
 | Recurso | Requisito mínimo |
 |---------|-----------------|
-| Cuenta AWS | Permisos IAM: `bedrock:CreateGuardrail`, `bedrock:GetGuardrail`, `bedrock-runtime:ApplyGuardrail`, `bedrock-runtime:InvokeModel` |
 | Cuenta Azure | Azure AI Services desplegado, Content Safety habilitado, rol **Cognitive Services User** |
-| AWS CLI | Configurado con `aws configure` (región: `us-east-1` o `us-west-2`) |
 | Azure CLI | Autenticado con `az login` |
 
 > **🔑 Gestión de secretos:** Ninguna credencial debe escribirse en el código fuente. Todas se leen desde variables de entorno. El repositorio incluye `.gitignore` que excluye archivos `.env`.
