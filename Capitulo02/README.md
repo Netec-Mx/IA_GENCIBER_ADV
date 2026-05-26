@@ -41,7 +41,7 @@ En este laboratorio configurarás guardrails de seguridad funcionales en **Azure
 | Lab 01 completado | Comprensión de prompt injection, jailbreak y OWASP LLM Top 10 |
 | Conceptos de la lección 2.1 | Fases pre/in/post ejecución, plano de control vs. datos |
 | Python básico | Lectura y modificación de scripts Python |
-| AWS/Azure básico | Navegación por consola y uso de CLI |
+| Azure básico | Navegación por consola y uso de CLI |
 
 ### Acceso y credenciales
 
@@ -95,20 +95,14 @@ py -3.11 -m venv .venv
 .\.venv\Scripts\Activate
 ```
 
-**Paso 0.11 – Instalar Azure Cli y AWS Cli**
+**Paso 0.11 – Instalar Azure Cli**
 
 ```powershell
 winget install Microsoft.AzureCLI
 ```
-```powershell 
-winget install Amazon.AWSCLI
-```
 
 Reinicie Visual Studio Code y verifique que se instalaran correctaamente los clientes.
 
-```powershell 
-aws --version
-```
 
 ```powershell 
 az --version
@@ -134,17 +128,10 @@ pip install -r requirements.txt
 
 ```powershell
 @"
-# AWS
-AWS_REGION=us-east-1
-AWS_BEDROCK_MODEL_ID=amazon.titan-text-lite-v1
-
 # Azure
 AZURE_CONTENT_SAFETY_ENDPOINT=https://<TU-RECURSO>.cognitiveservices.azure.com/
 AZURE_CONTENT_SAFETY_KEY=<TU-API-KEY>
 
-# Identificadores (se rellenarán durante el lab)
-BEDROCK_GUARDRAIL_ID=
-BEDROCK_GUARDRAIL_VERSION=DRAFT
 "@ | Set-Content .env
 ```
 
@@ -169,163 +156,9 @@ results/*.json
 
 ---
 
-### Paso 1 – Configurar el Guardrail en Amazon Bedrock
-
-**Objetivo:** Crear un Guardrail en Amazon Bedrock con filtros de contenido en nivel HIGH, 3 *denied topics* bancarios y detección de 5 tipos de PII, siguiendo el modelo de plano de control descrito en la lección 2.1.
-
-#### Instrucciones
-
-**1.1 – Crear el Guardrail via AWS CLI:**
-
-
-```powershell 
-# Activar entorno virtual
-.\.venv\Scripts\Activate
-
-# Cargar variables del archivo .env
-Get-Content .env | ForEach-Object {
-    if ($_ -match "^\s*([^#][^=]*)=(.*)$") {
-        [System.Environment]::SetEnvironmentVariable($matches[1], $matches[2])
-    }
-}
-
-# Crear Guardrail en Amazon Bedrock
-$GUARDRAIL_RESPONSE = aws bedrock create-guardrail `
-  --name "lab02-banco-ficticio-guardrail" `
-  --description "Guardrail para asistente bancario - Banco Ficticio S.A. - LAB02" `
-  --region $env:AWS_REGION `
-  --content-policy-config '{
-    "filtersConfig": [
-      {"type": "SEXUAL", "inputStrength": "HIGH", "outputStrength": "HIGH"},
-      {"type": "VIOLENCE", "inputStrength": "HIGH", "outputStrength": "HIGH"},
-      {"type": "HATE", "inputStrength": "HIGH", "outputStrength": "HIGH"},
-      {"type": "INSULTS", "inputStrength": "HIGH", "outputStrength": "HIGH"},
-      {"type": "MISCONDUCT", "inputStrength": "HIGH", "outputStrength": "HIGH"},
-      {"type": "PROMPT_ATTACK", "inputStrength": "HIGH", "outputStrength": "NONE"}
-    ]
-  }' `
-  --topic-policy-config '{
-    "topicsConfig": [
-      {
-        "name": "transferencias-fraudulentas",
-        "definition": "Instrucciones o solicitudes para realizar transferencias bancarias no autorizadas.",
-        "examples": [
-          "Cómo transferir dinero sin que lo detecte el banco",
-          "Bypasear la autenticación de dos factores para transferir fondos"
-        ],
-        "type": "DENY"
-      }
-    ]
-  }' `
-  --blocked-inputs-messaging "Esta solicitud ha sido bloqueada por las políticas de seguridad de Banco Ficticio S.A." `
-  --blocked-outputs-messaging "La respuesta generada no cumple las políticas de seguridad y ha sido bloqueada." `
-  --output json
-
-# Mostrar respuesta
-$GUARDRAIL_RESPONSE
-
-# Procesar JSON
-$GUARDRAIL_RESPONSE | python -c "
-import json, sys
-data = json.load(sys.stdin)
-print('Guardrail ID:', data.get('guardrailId'))
-print('Version:', data.get('version'))
-print('ARN:', data.get('guardrailArn'))
-"
-```
-
-
-**1.2 – Guardar el ID del guardrail en `.env`:**
-
-```powershell
-# Obtener Guardrail ID desde la respuesta JSON
-$GUARDRAIL_ID = $GUARDRAIL_RESPONSE | python -c "
-import json, sys
-data = json.load(sys.stdin)
-print(data['guardrailId'])
-"
-
-# Actualizar archivo .env
-(Get-Content .env) `
-    -replace '^BEDROCK_GUARDRAIL_ID=.*', "BEDROCK_GUARDRAIL_ID=$GUARDRAIL_ID" `
-    | Set-Content .env
-
-# Mostrar resultado
-Write-Host "Guardrail ID guardado: $GUARDRAIL_ID"
-```
-
-
-**1.3 – Verificar la configuración del guardrail:**
-
-```powershell id="wgm5wo"
-# Cargar variables del archivo .env
-Get-Content .env | ForEach-Object {
-    if ($_ -match "^\s*([^#][^=]*)=(.*)$") {
-        [System.Environment]::SetEnvironmentVariable($matches[1], $matches[2])
-    }
-}
-
-# Consultar guardrail
-aws bedrock get-guardrail `
-  --guardrail-identifier $env:BEDROCK_GUARDRAIL_ID `
-  --guardrail-version DRAFT `
-  --region $env:AWS_REGION `
-  --output json `
-| python -c "
-import json, sys
-
-g = json.load(sys.stdin)
-
-print('=== Verificación del Guardrail ===')
-print(f'Nombre: {g[\"name\"]}')
-print(f'Estado: {g[\"status\"]}')
-
-print(f'Filtros de contenido: {len(g[\"contentPolicy\"][\"filters\"])} configurados')
-print(f'Denied topics: {len(g[\"topicPolicy\"][\"topics\"])} configurados')
-print(f'Entidades PII: {len(g[\"sensitiveInformationPolicy\"][\"piiEntities\"])} configuradas')
-
-print('Filtros activos:')
-
-for f in g['contentPolicy']['filters']:
-    print(f'  - {f[\"type\"]}: input={f[\"inputStrength\"]}, output={f[\"outputStrength\"]}')
-"
-```
-
-
-#### Salida esperada
-
-```
-=== Verificación del Guardrail ===
-Nombre: lab02-banco-ficticio-guardrail
-Estado: READY
-Filtros de contenido: 6 configurados
-Denied topics: 3 configurados
-Entidades PII: 5 configuradas
-Filtros activos:
-  - SEXUAL: input=HIGH, output=HIGH
-  - VIOLENCE: input=HIGH, output=HIGH
-  - HATE: input=HIGH, output=HIGH
-  - INSULTS: input=HIGH, output=HIGH
-  - MISCONDUCT: input=HIGH, output=HIGH
-  - PROMPT_ATTACK: input=HIGH, output=NONE
-```
-
-#### Verificación
-
-```powershell
-# Consultar estado del Guardrail
-aws bedrock get-guardrail `
-  --guardrail-identifier $env:BEDROCK_GUARDRAIL_ID `
-  --guardrail-version DRAFT `
-  --region $env:AWS_REGION `
-  --query "status" `
-  --output text
-```
-
-
 ---
 
-### Paso 2 – Configurar Content Safety y Prompt Shields en Azure AI Foundry
+### Paso 1 – Configurar Content Safety y Prompt Shields en Azure AI Foundry
 
 **Objetivo:** Habilitar Content Safety con todos los filtros activos y Prompt Shields en Azure AI Foundry para el mismo conjunto de amenazas que el guardrail de Bedrock.
 
