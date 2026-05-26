@@ -76,6 +76,19 @@ En este laboratorio configurarás guardrails de seguridad funcionales en **Azure
 
 * Ingrese a Visual Studio Code, abra la carpeta creada anteriormente  y abra una Consola en Terminal con PowerShell.
 
+**Paso 0.11 – Instalar Azure Cli**
+
+```powershell
+winget install Microsoft.AzureCLI
+```
+
+Reinicie Visual Studio Code y verifique que se instalaran correctaamente los clientes.
+
+
+```powershell 
+az --version
+```
+
 ```powershell
 # Crear carpeta principal
 mkdir lab-02-guardrails
@@ -95,18 +108,7 @@ py -3.11 -m venv .venv
 .\.venv\Scripts\Activate
 ```
 
-**Paso 0.11 – Instalar Azure Cli**
 
-```powershell
-winget install Microsoft.AzureCLI
-```
-
-Reinicie Visual Studio Code y verifique que se instalaran correctaamente los clientes.
-
-
-```powershell 
-az --version
-```
 
 
 **Paso 0.2 – Instalar dependencias (versiones fijadas):**
