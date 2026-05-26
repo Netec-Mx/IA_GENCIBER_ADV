@@ -166,34 +166,6 @@ results/*.json
 
 #### Instrucciones
 
-**2.1 – Verificar el recurso de Azure AI Content Safety:**
-
-```powershell
-# Verificar que el recurso existe y está activo
-az cognitiveservices account show `
-  --name "<NOMBRE-DE-TU-RECURSO-AI-SERVICES>" `
-  --resource-group "<TU-RESOURCE-GROUP>" `
-  --query "{name:name, kind:kind, location:location, provisioningState:properties.provisioningState}" `
-  --output table
-```
-
-**2.2 – Obtener la clave de API (si no la tienes en `.env`):**
-
-```bash
-# Obtener la llave del recurso Azure AI Services
-$AZURE_KEY = az cognitiveservices account keys list `
-  --name "<NOMBRE-DE-TU-RECURSO-AI-SERVICES>" `
-  --resource-group "<TU-RESOURCE-GROUP>" `
-  --query key1 `
-  --output tsv
-
-# Actualizar la variable en el archivo .env
-(Get-Content .env) `
-  -replace '^AZURE_CONTENT_SAFETY_KEY=.*', "AZURE_CONTENT_SAFETY_KEY=$AZURE_KEY" `
-  | Set-Content .env
-
-Write-Host "Variable AZURE_CONTENT_SAFETY_KEY actualizada correctamente."
-```
 
 **2.3 – Crear script de prueba de conectividad Azure:**
 
