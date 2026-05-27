@@ -341,6 +341,9 @@ Get-ChildItem .\mock-llm\
 **2.1** Crear el Dockerfile del mock de identidad:
 
 ```dockerfile
+# Crear carpeta mock-identity si no existe
+New-Item -ItemType Directory -Path .\mock-identity -Force
+
 # Crear Dockerfile de mock-identity en UTF-8
 @'
 FROM python:3.11-slim
@@ -565,6 +568,10 @@ Get-ChildItem .\mock-identity\ -Force
 **3.1** Crear el catálogo de modelos por tier:
 
 ```json
+
+# Crear estructura de carpetas para OPA
+New-Item -ItemType Directory -Path .\opa\data -Force
+
 # Crear model_tiers.json en UTF-8
 @'
 {
