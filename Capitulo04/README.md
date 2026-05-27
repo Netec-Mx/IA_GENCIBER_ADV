@@ -172,6 +172,9 @@ Write-Host "Edita .env con tus credenciales reales antes de continuar"
 **1.1** Crear el Dockerfile del mock LLM:
 
 ```dockerfile
+# Crear carpeta si no existe
+New-Item -ItemType Directory -Path .\mock-llm -Force
+
 # Crear Dockerfile en UTF-8
 @'
 FROM python:3.11-slim
