@@ -72,7 +72,7 @@ En este laboratorio configurarás guardrails de seguridad funcionales en **Azure
 
 **Paso 0.1 – Crear estructura de directorios y entorno virtual:**
 
-* En la máquina Virtual, cree una carpeta llamada Lab02 en cualquier ubicación (Escritorio, Descargas, Documentos, etc)
+* En la máquina Virtual, cree una carpeta llamada CursoBancolombiaIA en cualquier ubicación (Escritorio, Descargas, Documentos, etc)
 
 * Ingrese a Visual Studio Code, abra la carpeta creada anteriormente  y abra una Consola en Terminal con PowerShell.
 
