@@ -66,6 +66,8 @@ En este laboratorio construirás un microservicio FastAPI que actúa como gatewa
 
 #### Paso 0 — Crear directorio y entorno virtual
 
+Ubicate en la carpeta raiz del curso
+
 ```bash
 # Crear carpeta del laboratorio
 New-Item -ItemType Directory -Force -Path "$HOME\lab03-guardrails" | Out-Null
