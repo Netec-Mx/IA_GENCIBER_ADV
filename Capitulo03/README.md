@@ -109,7 +109,8 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt
 
 # Descargar modelo spaCy
-python -m spacy download en_core_web_lg
+pip install `
+https://github.com/explosion/spacy-models/releases/download/en_core_web_md-3.7.1/en_core_web_md-3.7.1-py3-none-any.whl
 ```
 
 > **⏱ Tiempo estimado:** La descarga de `en_core_web_lg` (~685 MB) puede tardar 2-4 minutos según la conexión.
