@@ -76,7 +76,7 @@ New-Item -ItemType Directory -Force -Path "lab03-guardrails" | Out-Null
 Set-Location "lab03-guardrails"
 
 # Crear entorno virtual
-python -m venv .venv
+py -3.11 -m venv .venv
 
 # Activar entorno virtual (PowerShell)
 .\.venv\Scripts\Activate.ps1
