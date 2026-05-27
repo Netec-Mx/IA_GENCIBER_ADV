@@ -70,10 +70,10 @@ Ubicate en la carpeta raiz del curso
 
 ```bash
 # Crear carpeta del laboratorio
-New-Item -ItemType Directory -Force -Path "$HOME\lab03-guardrails" | Out-Null
+New-Item -ItemType Directory -Force -Path "lab03-guardrails" | Out-Null
 
 # Entrar a la carpeta
-Set-Location "$HOME\lab03-guardrails"
+Set-Location "lab03-guardrails"
 
 # Crear entorno virtual
 python -m venv .venv
