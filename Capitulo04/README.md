@@ -189,14 +189,7 @@ COPY main.py .
 
 EXPOSE 9090
 
-CMD [
-    "uvicorn",
-    "main:app",
-    "--host",
-    "0.0.0.0",
-    "--port",
-    "9090"
-]
+CMD uvicorn main:app --host 0.0.0.0 --port 9090
 '@ | Set-Content .\mock-llm\Dockerfile -Encoding UTF8
 ```
 
@@ -358,14 +351,8 @@ COPY main.py .
 
 EXPOSE 8080
 
-CMD [
-    "uvicorn",
-    "main:app",
-    "--host",
-    "0.0.0.0",
-    "--port",
-    "8080"
-]
+CMD uvicorn main:app --host 0.0.0.0 --port 8080
+
 '@ | Set-Content .\mock-identity\Dockerfile -Encoding UTF8
 ```
 
