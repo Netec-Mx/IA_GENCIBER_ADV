@@ -85,17 +85,17 @@ py -3.11 -m venv .venv
 #### Paso 0.1 — Crear `requirements.txt`
 
 ```bash
-# Crear archivo requirements.txt en UTF-8
 @'
-fastapi==0.111.0
-uvicorn[standard]==0.29.0
+fastapi==0.109.2
+uvicorn[standard]==0.27.1
 llm-guard==0.3.14
 presidio-analyzer==2.2.354
 presidio-anonymizer==2.2.354
-spacy==3.7.4
+spacy==3.7.2
 httpx==0.27.0
 python-dotenv==1.0.1
-pydantic==2.7.1
+pydantic==2.6.4
+typer==0.9.0
 '@ | Set-Content requirements.txt -Encoding UTF8
 ```
 
