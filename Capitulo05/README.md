@@ -300,9 +300,9 @@ pip install -r .\requirements.txt
 
 # Descargar modelos de spaCy
 
-python -m spacy download es_core_news_sm
+python -m pip install https://github.com/explosion/spacy-models/releases/download/es_core_news_sm-3.7.0/es_core_news_sm-3.7.0-py3-none-any.whl
 
-python -m spacy download en_core_web_sm
+python -m pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
 ```
 
 
