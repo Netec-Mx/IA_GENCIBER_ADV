@@ -264,6 +264,17 @@ Invoke-RestMethod `
 
 ### 5.3 Instalar dependencias Python
 
+Cargar entorno
+
+```powershell id="q8m4ra"
+py -3.11 -m venv venv
+```
+
+```powershell id="q8m4ra"
+.\venv\Scripts\Activate.ps1
+```
+
+
 ```powershell id="q8m4ra"
 # Crear requirements.txt
 
@@ -273,7 +284,7 @@ presidio-analyzer==2.2.354
 presidio-anonymizer==2.2.354
 great-expectations==0.18.19
 sentence-transformers==2.7.0
-trufflehog==3.78.0
+trufflehog==2.2.1
 cryptography==42.0.8
 spacy==3.7.4
 langdetect==1.0.9
