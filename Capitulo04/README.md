@@ -214,11 +214,11 @@ Mock LLM API - Simula respuestas de OpenAI
 para pruebas sin coste.
 
 DISCLAIMER:
-Este servidor es únicamente para fines
+Este servidor es unicamente para fines
 educativos y de prueba.
 
 Las respuestas son ficticias y no provienen
-de ningún modelo real.
+de ningun modelo real.
 """
 
 import time
@@ -230,12 +230,10 @@ from fastapi import (
 )
 from fastapi.responses import JSONResponse
 
-
 app = FastAPI(
     title="Mock LLM API",
     version="1.0.0"
 )
-
 
 MOCK_RESPONSES = {
 
@@ -248,9 +246,8 @@ MOCK_RESPONSES = {
         "tier-2 (gpt-4o). [MOCK]",
 
     "default":
-        "Respuesta simulada genérica. [MOCK]",
+        "Respuesta simulada generica. [MOCK]",
 }
-
 
 @app.post("/v1/chat/completions")
 async def chat_completions(
@@ -303,7 +300,6 @@ async def chat_completions(
             "total_tokens": 30
         }
     })
-
 
 @app.get("/health")
 async def health():
