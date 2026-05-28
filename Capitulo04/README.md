@@ -623,19 +623,13 @@ New-Item -ItemType Directory -Path .\opa\data -Force
 **3.2** Crear la política Rego principal:
 
 ```rego
-# Crear llm_access.rego en UTF-8
 @'
 package llm.access
 
 import future.keywords.if
 import future.keywords.in
 
-# ─────────────────────────────────────────────
-# REGLA PRINCIPAL: allow
-# Permite la solicitud si todas las sub-reglas pasan.
-# ─────────────────────────────────────────────
 default allow := false
-
 
 allow if {
     role_exists
@@ -643,111 +637,65 @@ allow if {
     not production_model_outside_hours
 }
 
-
-# ─────────────────────────────────────────────
-# SUB-REGLA 1: Rol válido
-# ─────────────────────────────────────────────
 valid_roles := {
     "analyst",
     "developer",
     "admin"
 }
 
-
 role_exists if {
     input.jwt_claims.role in valid_roles
 }
 
-
-# ─────────────────────────────────────────────
-# SUB-REGLA 2: Modelo permitido por rol
-# ─────────────────────────────────────────────
-
 # Analyst → solo tier-1
 model_allowed_for_role if {
-
     input.jwt_claims.role == "analyst"
-
     input.model in data.tiers["tier-1"].models
 }
-
 
 # Developer → tier-1
 model_allowed_for_role if {
-
     input.jwt_claims.role == "developer"
-
     input.model in data.tiers["tier-1"].models
 }
 
-
 # Developer → tier-2
 model_allowed_for_role if {
-
     input.jwt_claims.role == "developer"
-
     input.model in data.tiers["tier-2"].models
 }
-
 
 # Admin → acceso total
 model_allowed_for_role if {
-
     input.jwt_claims.role == "admin"
-
     input.model in data.tiers["tier-all"].models
 }
 
-
-# ─────────────────────────────────────────────
-# SUB-REGLA 3: Restricción horaria
-# ─────────────────────────────────────────────
-
 is_production_model if {
-
     input.model in data.tiers["tier-2"].models
 }
 
-
 is_production_model if {
-
     input.model in data.tiers["tier-all"].models
-
     not input.model in data.tiers["tier-1"].models
-
     not input.model in data.tiers["tier-2"].models
 }
 
-
 within_business_hours if {
 
-    hour := time.clock(
-        [
-            input.request_time_ns,
-            "UTC"
-        ]
-    )[0]
+    # CORREGIDO
+    hour := time.clock(input.request_time_ns)[0]
 
     hour >= data.business_hours.start_hour_utc
-
     hour < data.business_hours.end_hour_utc
 }
 
-
 production_model_outside_hours if {
-
     is_production_model
-
     not within_business_hours
 }
 
-
-# ─────────────────────────────────────────────
-# METADATA: Razones de denegación
-# ─────────────────────────────────────────────
-
 deny_reason := reason if {
-
     not role_exists
 
     reason := sprintf(
@@ -756,11 +704,9 @@ deny_reason := reason if {
     )
 }
 
-
 deny_reason := reason if {
 
     role_exists
-
     not model_allowed_for_role
 
     reason := sprintf(
@@ -772,31 +718,22 @@ deny_reason := reason if {
     )
 }
 
-
 deny_reason := reason if {
 
     role_exists
-
     model_allowed_for_role
-
     production_model_outside_hours
 
     reason := sprintf(
-        "Modelo de producción '%v' solo disponible en horario laboral (08:00–20:00 UTC)",
+        "Modelo de producción '%v' solo disponible en horario laboral (08:00-20:00 UTC)",
         [input.model]
     )
 }
 
-
 deny_reason := "Solicitud denegada por política de acceso LLM" if {
-
     not allow
-
-    not role_exists
-
-    not model_allowed_for_role
 }
-'@ | Set-Content .\opa\policies\llm_access.rego -Encoding UTF8
+'@ | Out-File -FilePath .\opa\policies\llm_access.rego 
 ```
 
 **Salida esperada**: Archivos de política OPA creados sin errores de sintaxis.
