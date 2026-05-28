@@ -1419,35 +1419,40 @@ lab-litellm           ghcr.io/berriai/litellm:main-v1.40.10  Up (healthy)
 ```
 
 **Verificación**:
-```bash
-# Health check - Mock Identity
+```powershell id="p4m8qx"
+# Health check Mock Identity
+
 Invoke-RestMethod `
     -Uri "http://localhost:8080/health" `
     -Method GET `
 | ConvertTo-Json -Depth 10
 
 
-# Health check - OPA
+# Health check OPA
+
 Invoke-RestMethod `
     -Uri "http://localhost:8181/health" `
     -Method GET `
 | ConvertTo-Json -Depth 10
 
 
-# Health check - LiteLLM
+# Health check LiteLLM
+
 Invoke-RestMethod `
     -Uri "http://localhost:4000/health" `
     -Method GET `
 | ConvertTo-Json -Depth 10
 
 
-# Verificar políticas cargadas en OPA
+# Verificar politicas cargadas en OPA
+
 (
     Invoke-RestMethod `
         -Uri "http://localhost:8181/v1/policies" `
         -Method GET
 ).result | ConvertTo-Json -Depth 10
 ```
+
 
 ---
 
@@ -1459,26 +1464,32 @@ Invoke-RestMethod `
 
 **6.1** Instalar dependencias Python para el lab:
 
-```bash
-# Crear requirements.txt de tests en UTF-8
+```powershell id="z8m2qa"
+# Crear requirements.txt de tests
+
 @'
 requests==2.32.3
 python-jose[cryptography]==3.3.0
 pytest==8.2.2
 pytest-html==4.1.1
 tabulate==0.9.0
-'@ | Set-Content .\tests\requirements.txt -Encoding UTF8
+'@ | Out-File .\tests\requirements.txt -Encoding utf8
 
 
 # Instalar dependencias
+
 pip install -r .\tests\requirements.txt
 ```
 
+
 **6.2** Crear las virtual keys ejecutando el script de inicialización:
 
-```bash
-# Cargar variables del archivo .env al entorno actual
+```powershell id="x7m4qp"
+# Cargar variables del archivo .env
+
 Get-Content .env | ForEach-Object {
+
+    # Ignorar comentarios y lineas vacias
 
     if (
         $_ -match '^\s*#' -or
@@ -1495,20 +1506,22 @@ Get-Content .env | ForEach-Object {
         "Process"
     )
 }
-
 ```
+
 
 **6.3** Probar OPA directamente con casos manuales:
 
-```bash
+```powershell id="m5q8ra"
 # Timestamp actual en nanosegundos UTC
+
 $timestampNs = (
     [DateTimeOffset]::UtcNow.ToUnixTimeSeconds().ToString()
 ) + "000000000"
 
 
-# ── TEST MANUAL 1 ────────────────────────────────────────────────
-# Analyst + tier-1 → DEBE PERMITIR
+# TEST MANUAL 1
+# Analyst + tier-1
+# Resultado esperado: allow = true
 
 $body1 = @{
     input = @{
@@ -1533,12 +1546,9 @@ Invoke-RestMethod `
 | ConvertTo-Json -Depth 10
 
 
-# Resultado esperado:
-# allow = true
-
-
-# ── TEST MANUAL 2 ────────────────────────────────────────────────
-# Analyst + tier-2 → DEBE DENEGAR
+# TEST MANUAL 2
+# Analyst + tier-2
+# Resultado esperado: allow = false
 
 $body2 = @{
     input = @{
@@ -1563,12 +1573,9 @@ Invoke-RestMethod `
 | ConvertTo-Json -Depth 10
 
 
-# Resultado esperado:
-# allow = false
-
-
-# ── TEST MANUAL 3 ────────────────────────────────────────────────
-# Developer + tier-2 → DEBE PERMITIR
+# TEST MANUAL 3
+# Developer + tier-2
+# Resultado esperado: allow = true
 
 $body3 = @{
     input = @{
@@ -1591,11 +1598,8 @@ Invoke-RestMethod `
     -ContentType "application/json" `
     -Body $body3 `
 | ConvertTo-Json -Depth 10
-
-
-# Resultado esperado:
-# allow = true
 ```
+
 
 **Salida esperada** para el Test 1:
 ```json
@@ -1610,12 +1614,14 @@ Invoke-RestMethod `
 ```
 
 **Verificación**:
-```bash
-# Mostrar últimas decisiones registradas por OPA
+```powershell id="n4q7ra"
+# Mostrar ultimas decisiones registradas por OPA
+
 docker logs lab-opa 2>&1 `
 | Select-String "decision_id" `
 | Select-Object -Last 5
 ```
+
 
 ---
 
@@ -1627,16 +1633,17 @@ docker logs lab-opa 2>&1 `
 
 **7.1** Crear el script de tests:
 
-```python
-# Crear test_policies.py en UTF-8
+```powershell id="w3m8qp"
+# Crear test_policies.py
+
 @'
 # -*- coding: utf-8 -*-
 """
-Batería de tests para verificar enforcement
-de políticas RBAC en OPA.
+Bateria de tests para verificar enforcement
+de politicas RBAC en OPA.
 
 Cubre:
-roles × modelos × restricción temporal.
+roles x modelos x restriccion temporal.
 
 DISCLAIMER:
 Los usuarios y datos usados
@@ -1672,7 +1679,7 @@ OPA_POLICY = (
 )
 
 
-# ── Casos de prueba ───────────────────────────────────────────────
+# Casos de prueba
 
 TEST_CASES = [
 
@@ -1682,7 +1689,7 @@ TEST_CASES = [
         "gpt-3.5-turbo",
         10,
         True,
-        "Analyst + tier-1 en horario"
+        "Analyst tier-1 horario laboral"
     ),
 
     (
@@ -1691,7 +1698,7 @@ TEST_CASES = [
         "chat-standard",
         14,
         True,
-        "Analyst + alias tier-1"
+        "Analyst alias tier-1"
     ),
 
     (
@@ -1700,7 +1707,7 @@ TEST_CASES = [
         "gpt-4o",
         10,
         False,
-        "Analyst + tier-2"
+        "Analyst tier-2"
     ),
 
     (
@@ -1709,7 +1716,7 @@ TEST_CASES = [
         "chat-advanced",
         10,
         False,
-        "Analyst + alias tier-2"
+        "Analyst alias tier-2"
     ),
 
     (
@@ -1718,7 +1725,7 @@ TEST_CASES = [
         "gpt-3.5-turbo",
         11,
         True,
-        "Developer + tier-1"
+        "Developer tier-1"
     ),
 
     (
@@ -1727,7 +1734,7 @@ TEST_CASES = [
         "gpt-4o",
         15,
         True,
-        "Developer + tier-2"
+        "Developer tier-2"
     ),
 
     (
@@ -1736,7 +1743,7 @@ TEST_CASES = [
         "chat-advanced",
         9,
         True,
-        "Developer + alias tier-2"
+        "Developer alias tier-2"
     ),
 
     (
@@ -1745,7 +1752,7 @@ TEST_CASES = [
         "gpt-4o",
         3,
         False,
-        "Developer + tier-2 fuera horario"
+        "Developer tier-2 fuera horario"
     ),
 
     (
@@ -1754,7 +1761,7 @@ TEST_CASES = [
         "gpt-3.5-turbo",
         12,
         True,
-        "Admin + tier-1"
+        "Admin tier-1"
     ),
 
     (
@@ -1763,7 +1770,7 @@ TEST_CASES = [
         "gpt-4o",
         16,
         True,
-        "Admin + tier-2"
+        "Admin tier-2"
     ),
 
     (
@@ -1772,7 +1779,7 @@ TEST_CASES = [
         "chat-premium",
         22,
         False,
-        "Admin + producción fuera horario"
+        "Admin produccion fuera horario"
     ),
 
     (
@@ -1781,7 +1788,7 @@ TEST_CASES = [
         "gpt-3.5-turbo",
         10,
         False,
-        "Rol inválido"
+        "Rol invalido"
     ),
 ]
 
@@ -1810,7 +1817,7 @@ def build_opa_input(
 
     forced_time_ns = (
         now + offset_seconds
-    ) * 1_000_000_000
+    ) * 1000000000
 
     return {
 
@@ -1849,7 +1856,7 @@ def evaluate_policy(
     hour_utc: int
 ) -> dict:
     """
-    Ejecuta evaluación en OPA.
+    Ejecuta evaluacion en OPA.
     """
 
     payload = build_opa_input(
@@ -1964,7 +1971,7 @@ def run_all_tests():
     return results, passed, failed
 
 
-# ── Pytest parametrizado ─────────────────────────────────────────
+# Pytest parametrizado
 
 @pytest.mark.parametrize(
     (
@@ -2018,11 +2025,11 @@ def test_opa_policy(
         f"Obtenido: "
         f"{'ALLOW' if actual else 'DENY'}\n"
 
-        f"Razón OPA: {deny_reason}"
+        f"Razon OPA: {deny_reason}"
     )
 
 
-# ── Ejecución directa ────────────────────────────────────────────
+# Ejecucion directa
 
 if __name__ == "__main__":
 
@@ -2031,8 +2038,8 @@ if __name__ == "__main__":
     print("=" * 80)
 
     print(
-        "BATERÍA DE TESTS "
-        "— LiteLLM + OPA RBAC"
+        "BATERIA DE TESTS "
+        "LiteLLM OPA RBAC"
     )
 
     print("=" * 80)
@@ -2050,7 +2057,7 @@ if __name__ == "__main__":
         "Esperado",
         "Obtenido",
         "Estado",
-        "Razón OPA"
+        "Razon OPA"
     ]
 
     print(
@@ -2083,8 +2090,8 @@ if __name__ == "__main__":
         )
 
         print(
-            "Revisa las políticas Rego "
-            "y archivos en opa/data/."
+            "Revisar politicas Rego "
+            "y archivos en opa/data/"
         )
 
         exit(1)
@@ -2094,19 +2101,23 @@ if __name__ == "__main__":
         print(
             "Todos los tests pasaron."
         )
-'@ | Set-Content .\tests\test_policies.py -Encoding UTF8
+'@ | Out-File .\tests\test_policies.py -Encoding utf8
 ```
 
 **7.2** Ejecutar la batería de tests:
 
-```bash
-#OPCION A
+```powershell id="p7m4qa"
+# OPCION A
 # Entrar a la carpeta tests
+
 Set-Location .\tests
 
 
-# Cargar variables del .env al entorno actual
+# Cargar variables del archivo .env
+
 Get-Content ..\.env | ForEach-Object {
+
+    # Ignorar comentarios y lineas vacias
 
     if (
         $_ -match '^\s*#' -or
@@ -2125,18 +2136,25 @@ Get-Content ..\.env | ForEach-Object {
 }
 
 
-# Ejecutar batería de pruebas
+# Ejecutar bateria de pruebas
+
 python .\test_policies.py
 ```
 
-```bash
-# Opción B: Ejecución con pytest y reporte HTML
+```powershell id="u5m8qp"
+# OPCION B
+# Ejecutar pruebas con pytest y generar reporte HTML
+
 # Entrar a la carpeta tests
+
 Set-Location .\tests
 
 
 # Cargar variables del archivo .env
+
 Get-Content ..\.env | ForEach-Object {
+
+    # Ignorar comentarios y lineas vacias
 
     if (
         $_ -match '^\s*#' -or
@@ -2156,6 +2174,7 @@ Get-Content ..\.env | ForEach-Object {
 
 
 # Ejecutar pytest y generar reporte HTML
+
 pytest `
     .\test_policies.py `
     -v `
@@ -2164,8 +2183,10 @@ pytest `
 
 
 # Mensaje final
+
 Write-Host "Reporte generado en tests/report.html"
 ```
+
 
 **Salida esperada**:
 ```
@@ -2197,14 +2218,16 @@ Write-Host "Reporte generado en tests/report.html"
 ```
 
 **Verificación**:
-```bash
+```powershell id="r7m2qa"
 # Ejecutar pytest mostrando resumen final
+
 pytest `
     .\tests\test_policies.py `
     -v `
     --tb=short 2>&1 `
 | Select-Object -Last 5
 ```
+
 
 ---
 
