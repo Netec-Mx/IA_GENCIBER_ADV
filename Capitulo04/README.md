@@ -99,8 +99,9 @@ lab-04-00-01/
 
 ### Comandos de configuración inicial
 
-```bash
+```powershell id="m83qyz"
 # Crear estructura del laboratorio
+
 $folders = @(
     "lab-04-00-01",
     "lab-04-00-01\litellm",
@@ -120,12 +121,12 @@ foreach ($folder in $folders) {
         -Path $folder | Out-Null
 }
 
-
 # Entrar a la carpeta principal
+
 Set-Location "lab-04-00-01"
 
+# Crear .gitignore
 
-# Crear .gitignore en UTF-8
 @'
 .env
 *.env
@@ -135,29 +136,28 @@ Set-Location "lab-04-00-01"
 __pycache__/
 *.pyc
 .pytest_cache/
-'@ | Set-Content .gitignore -Encoding UTF8
+'@ | Out-File .gitignore -Encoding utf8
 
+# Crear .env.example
 
-# Crear .env.example en UTF-8
 @'
-# Copiar a .env y rellenar con valores reales
+# Copiar a .env y completar valores reales
 
 OPENAI_API_KEY=sk-REPLACE_ME
 LITELLM_MASTER_KEY=sk-lab-master-REPLACE_ME
 JWT_SECRET=super-secret-jwt-key-REPLACE_ME
 USE_MOCK_LLM=true
-'@ | Set-Content .env.example -Encoding UTF8
-
+'@ | Out-File .env.example -Encoding utf8
 
 # Copiar plantilla
+
 Copy-Item .env.example .env -Force
 
+# Mensaje final
 
-# Mensaje
-Write-Host "Edita .env con tus credenciales reales antes de continuar"
+Write-Host "Edita .env con credenciales reales antes de continuar"
 ```
 
----
 
 ## Instrucciones Paso a Paso
 
@@ -171,11 +171,16 @@ Write-Host "Edita .env con tus credenciales reales antes de continuar"
 
 **1.1** Crear el Dockerfile del mock LLM:
 
-```dockerfile
+```powershell id="0kkg4q"
 # Crear carpeta si no existe
-New-Item -ItemType Directory -Path .\mock-llm -Force
 
-# Crear Dockerfile en UTF-8
+New-Item `
+    -ItemType Directory `
+    -Path .\mock-llm `
+    -Force
+
+# Crear Dockerfile
+
 @'
 FROM python:3.11-slim
 
@@ -190,7 +195,7 @@ COPY main.py .
 EXPOSE 9090
 
 CMD uvicorn main:app --host 0.0.0.0 --port 9090
-'@ | Set-Content .\mock-llm\Dockerfile -Encoding UTF8
+'@ | Out-File .\mock-llm\Dockerfile -Encoding utf8
 ```
 
 **1.2** Crear las dependencias del mock LLM:
@@ -205,8 +210,9 @@ uvicorn==0.27.1
 
 **1.3** Crear el servidor FastAPI que simula OpenAI:
 
-```python
-# Crear main.py del mock-llm en UTF-8
+```powershell id="fyjlwm"
+# Crear main.py del mock-llm
+
 @'
 # -*- coding: utf-8 -*-
 """
@@ -228,12 +234,15 @@ from fastapi import (
     FastAPI,
     Request,
 )
+
 from fastapi.responses import JSONResponse
+
 
 app = FastAPI(
     title="Mock LLM API",
     version="1.0.0"
 )
+
 
 MOCK_RESPONSES = {
 
@@ -248,6 +257,7 @@ MOCK_RESPONSES = {
     "default":
         "Respuesta simulada generica. [MOCK]",
 }
+
 
 @app.post("/v1/chat/completions")
 async def chat_completions(
@@ -301,6 +311,7 @@ async def chat_completions(
         }
     })
 
+
 @app.get("/health")
 async def health():
 
@@ -308,8 +319,9 @@ async def health():
         "status": "ok",
         "service": "mock-llm"
     }
-'@ | Set-Content .\mock-llm\main.py -Encoding UTF8
+'@ | Out-File .\mock-llm\main.py -Encoding utf8
 ```
+
 
 **Salida esperada**: Los archivos del mock LLM están creados correctamente.
 
@@ -329,11 +341,16 @@ Get-ChildItem .\mock-llm\
 
 **2.1** Crear el Dockerfile del mock de identidad:
 
-```dockerfile
+```powershell id="3yajxj"
 # Crear carpeta mock-identity si no existe
-New-Item -ItemType Directory -Path .\mock-identity -Force
 
-# Crear Dockerfile de mock-identity en UTF-8
+New-Item `
+    -ItemType Directory `
+    -Path .\mock-identity `
+    -Force
+
+# Crear Dockerfile de mock-identity
+
 @'
 FROM python:3.11-slim
 
@@ -348,25 +365,28 @@ COPY main.py .
 EXPOSE 8080
 
 CMD uvicorn main:app --host 0.0.0.0 --port 8080
-
-'@ | Set-Content .\mock-identity\Dockerfile -Encoding UTF8
+'@ | Out-File .\mock-identity\Dockerfile -Encoding utf8
 ```
+
 
 **2.2** Crear las dependencias:
 
-```text
-# Crear requirements.txt de mock-identity en UTF-8
+```powershell id="9n8h5m"
+# Crear requirements.txt de mock-identity
+
 @'
 fastapi==0.109.2
 uvicorn==0.27.1
 python-jose[cryptography]==3.3.0
-'@ | Set-Content .\mock-identity\requirements.txt -Encoding UTF8
+'@ | Out-File .\mock-identity\requirements.txt -Encoding utf8
 ```
+
 
 **2.3** Crear el generador de JWTs:
 
-```python
-# Crear main.py de mock-identity en UTF-8
+```powershell id="h2nq7v"
+# Crear main.py de mock-identity
+
 @'
 # -*- coding: utf-8 -*-
 """
@@ -377,7 +397,7 @@ para pruebas de RBAC.
 
 DISCLAIMER:
 Solo para uso en laboratorio.
-No usar en producción.
+No usar en produccion.
 """
 
 import os
@@ -459,8 +479,8 @@ async def generate_token(
             status_code=400,
 
             detail=(
-                "Rol inválido. "
-                f"Válidos: {VALID_ROLES}"
+                "Rol invalido. "
+                f"Validos: {VALID_ROLES}"
             )
         )
 
@@ -529,7 +549,7 @@ async def health():
         "status": "ok",
         "service": "mock-identity"
     }
-'@ | Set-Content .\mock-identity\main.py -Encoding UTF8
+'@ | Out-File .\mock-identity\main.py -Encoding utf8
 ```
 
 **Salida esperada**: Archivos del mock de identidad creados.
@@ -550,12 +570,16 @@ Get-ChildItem .\mock-identity\ -Force
 
 **3.1** Crear el catálogo de modelos por tier:
 
-```json
-
+```powershell id="q7m2ra"
 # Crear estructura de carpetas para OPA
-New-Item -ItemType Directory -Path .\opa\data -Force
 
-# Crear model_tiers.json en UTF-8
+New-Item `
+    -ItemType Directory `
+    -Path .\opa\data `
+    -Force
+
+# Crear model_tiers.json
+
 @'
 {
   "tiers": {
@@ -567,7 +591,7 @@ New-Item -ItemType Directory -Path .\opa\data -Force
       ],
 
       "description":
-        "Modelos económicos para tareas rutinarias",
+        "Modelos economicos para tareas rutinarias",
 
       "production": false
     },
@@ -597,7 +621,7 @@ New-Item -ItemType Directory -Path .\opa\data -Force
       ],
 
       "description":
-        "Acceso completo — solo administradores",
+        "Acceso completo solo administradores",
 
       "production": true
     }
@@ -610,15 +634,18 @@ New-Item -ItemType Directory -Path .\opa\data -Force
     "end_hour_utc": 20,
 
     "timezone_note":
-      "UTC — ajustar según zona horaria del equipo"
+      "UTC ajustar segun zona horaria del equipo"
   }
 }
-'@ | Set-Content .\opa\data\model_tiers.json -Encoding UTF8
+'@ | Out-File .\opa\data\model_tiers.json -Encoding utf8
 ```
+
 
 **3.2** Crear la política Rego principal:
 
-```rego
+```powershell id="v2j6nk"
+# Crear politica principal de OPA
+
 @'
 package llm.access
 
@@ -643,25 +670,29 @@ role_exists if {
     input.jwt_claims.role in valid_roles
 }
 
-# Analyst → solo tier-1
+# Analyst solo tier-1
+
 model_allowed_for_role if {
     input.jwt_claims.role == "analyst"
     input.model in data.tiers["tier-1"].models
 }
 
-# Developer → tier-1
+# Developer tier-1
+
 model_allowed_for_role if {
     input.jwt_claims.role == "developer"
     input.model in data.tiers["tier-1"].models
 }
 
-# Developer → tier-2
+# Developer tier-2
+
 model_allowed_for_role if {
     input.jwt_claims.role == "developer"
     input.model in data.tiers["tier-2"].models
 }
 
-# Admin → acceso total
+# Admin acceso total
+
 model_allowed_for_role if {
     input.jwt_claims.role == "admin"
     input.model in data.tiers["tier-all"].models
@@ -679,10 +710,10 @@ is_production_model if {
 
 within_business_hours if {
 
-    # CORREGIDO
     hour := time.clock(input.request_time_ns)[0]
 
     hour >= data.business_hours.start_hour_utc
+
     hour < data.business_hours.end_hour_utc
 }
 
@@ -692,11 +723,12 @@ production_model_outside_hours if {
 }
 
 deny_reason := reason if {
+
     not role_exists
 
     reason := sprintf(
-        "Rol '%v' no reconocido o no presente en el JWT",
-        [input.jwt_claims.role]
+        "Rol no reconocido o no presente en el JWT",
+        []
     )
 }
 
@@ -706,11 +738,8 @@ deny_reason := reason if {
     not model_allowed_for_role
 
     reason := sprintf(
-        "Rol '%v' no tiene permiso para usar el modelo '%v'",
-        [
-            input.jwt_claims.role,
-            input.model
-        ]
+        "Rol sin permisos para usar el modelo solicitado",
+        []
     )
 }
 
@@ -721,16 +750,17 @@ deny_reason := reason if {
     production_model_outside_hours
 
     reason := sprintf(
-        "Modelo de producción '%v' solo disponible en horario laboral (08:00-20:00 UTC)",
-        [input.model]
+        "Modelo disponible solo en horario laboral UTC",
+        []
     )
 }
 
-deny_reason := "Solicitud denegada por política de acceso LLM" if {
+deny_reason := "Solicitud denegada por politica de acceso LLM" if {
     not allow
 }
-'@ | Out-File -FilePath .\opa\policies\llm_access.rego 
+'@ | Out-File .\opa\policies\llm_access.rego -Encoding utf8
 ```
+
 
 **Salida esperada**: Archivos de política OPA creados sin errores de sintaxis.
 
@@ -760,19 +790,19 @@ Get-ChildItem .\opa\data\ -Force
 
 **4.1** Crear la configuración de LiteLLM:
 
-```yaml
-# Crear config.yaml en UTF-8
+```powershell id="j7m4za"
+# Crear config.yaml de LiteLLM
+
 @'
-# ─────────────────────────────────────────────────────────────────
-# Configuración de LiteLLM AI Gateway — Lab 04-00-01
-# NOTA:
+# Configuracion de LiteLLM AI Gateway
+# Lab 04-00-01
+
 # Las credenciales reales se inyectan
-# vía variables de entorno.
-# ─────────────────────────────────────────────────────────────────
+# usando variables de entorno
 
 model_list:
 
-  # ── Tier 1 ─────────────────────────────────────────────────────
+  # Tier 1
 
   - model_name: chat-standard
 
@@ -796,7 +826,7 @@ model_list:
       id: gpt-3.5-turbo
 
 
-  # ── Tier 2 ─────────────────────────────────────────────────────
+  # Tier 2
 
   - model_name: chat-advanced
 
@@ -820,9 +850,7 @@ model_list:
       id: gpt-4o
 
 
-# ─────────────────────────────────────────────────────────────────
 # LiteLLM Settings
-# ─────────────────────────────────────────────────────────────────
 
 litellm_settings:
 
@@ -834,13 +862,11 @@ litellm_settings:
 
   drop_params: true
 
-  # Hook de autorización
+  # Hook de autorizacion
   callbacks: []
 
 
-# ─────────────────────────────────────────────────────────────────
 # General Settings
-# ─────────────────────────────────────────────────────────────────
 
 general_settings:
 
@@ -851,40 +877,40 @@ general_settings:
   store_model_in_db: false
 
 
-# ─────────────────────────────────────────────────────────────────
 # Virtual Keys por rol
-# ─────────────────────────────────────────────────────────────────
-#
+
 # analyst-key
-#   → rate_limit: 10 RPM
-#   → budget: $50/mes
-#   → modelos: tier-1
-#
+# rate_limit: 10 RPM
+# budget: 50 USD por mes
+# modelos: tier-1
+
 # developer-key
-#   → rate_limit: 50 RPM
-#   → budget: $200/mes
-#   → modelos: tier-1 + tier-2
-#
+# rate_limit: 50 RPM
+# budget: 200 USD por mes
+# modelos: tier-1 y tier-2
+
 # admin-key
-#   → rate_limit: sin límite
-#   → budget: sin límite
-#   → modelos: todos
-#
-'@ | Set-Content .\litellm\config.yaml -Encoding UTF8
+# rate_limit: sin limite
+# budget: sin limite
+# modelos: todos
+
+'@ | Out-File .\litellm\config.yaml -Encoding utf8
 ```
+
 
 **4.2** Crear el script de inicialización de virtual keys:
 
-```python
-# Crear create_virtual_keys.py en UTF-8
+```powershell id="g8k2wr"
+# Crear create_virtual_keys.py
+
 @'
 # -*- coding: utf-8 -*-
 """
 Script para crear virtual keys de LiteLLM
-vía Admin API.
+usando Admin API.
 
-Ejecutar después de que el contenedor
-de LiteLLM esté en marcha.
+Ejecutar despues de que el contenedor
+de LiteLLM este disponible.
 """
 
 import os
@@ -909,7 +935,7 @@ if not MASTER_KEY:
     print(
         "ERROR: "
         "LITELLM_MASTER_KEY "
-        "no está definida."
+        "no esta definida."
     )
 
     sys.exit(1)
@@ -989,7 +1015,7 @@ VIRTUAL_KEYS = [
         "key_alias":
             "admin-key",
 
-        # Lista vacía = acceso total
+        # Lista vacia acceso total
         "models": [],
 
         "tpm_limit":
@@ -1024,7 +1050,7 @@ def wait_for_litellm(
 
     print(
         "Esperando que LiteLLM "
-        f"esté disponible en {LITELLM_URL}..."
+        f"este disponible en {LITELLM_URL}..."
     )
 
     for i in range(max_retries):
@@ -1057,7 +1083,7 @@ def wait_for_litellm(
         time.sleep(delay)
 
     print(
-        "LiteLLM no respondió a tiempo."
+        "LiteLLM no respondio a tiempo."
     )
 
     return False
@@ -1068,7 +1094,7 @@ def create_key(
 ) -> dict:
     """
     Crea una virtual key
-    vía Admin API.
+    usando Admin API.
     """
 
     payload = {
@@ -1138,25 +1164,25 @@ if __name__ == "__main__":
     print()
 
     print(
-        "── Resumen de Virtual Keys "
-        "──────────────────────────"
+        "Resumen de Virtual Keys"
     )
 
     for alias, key in created_keys.items():
 
         print(
             f"{alias:15s} "
-            f"→ {key}"
+            f"-> {key}"
         )
 
     print()
 
     print(
-        "Guarda estas keys "
-        "en tu archivo .env."
+        "Guardar estas keys "
+        "en el archivo .env."
     )
-'@ | Set-Content .\litellm\create_virtual_keys.py -Encoding UTF8
+'@ | Out-File .\litellm\create_virtual_keys.py -Encoding utf8
 ```
+
 
 **Salida esperada**: Archivos de configuración de LiteLLM creados.
 
@@ -1176,8 +1202,9 @@ Get-ChildItem .\litellm\ -Force
 
 **5.1** Crear el archivo Docker Compose:
 
-```yaml
-# Crear docker-compose.yml en UTF-8
+```powershell id="p8m2xa"
+# Crear docker-compose.yml
+
 @'
 version: "3.9"
 
@@ -1189,7 +1216,7 @@ networks:
 
 services:
 
-  # ── Mock LLM Provider ───────────────────────────────────────────
+  # Mock LLM Provider
 
   mock-llm:
 
@@ -1208,10 +1235,8 @@ services:
     healthcheck:
       test:
         [
-          "CMD",
-          "curl",
-          "-f",
-          "http://localhost:9090/health"
+          "CMD-SHELL",
+          "wget -qO- http://localhost:9090/health || exit 1"
         ]
 
       interval: 10s
@@ -1221,7 +1246,7 @@ services:
     restart: unless-stopped
 
 
-  # ── Mock Identity Provider ─────────────────────────────────────
+  # Mock Identity Provider
 
   mock-identity:
 
@@ -1243,10 +1268,8 @@ services:
     healthcheck:
       test:
         [
-          "CMD",
-          "curl",
-          "-f",
-          "http://localhost:8080/health"
+          "CMD-SHELL",
+          "wget -qO- http://localhost:8080/health || exit 1"
         ]
 
       interval: 10s
@@ -1256,7 +1279,7 @@ services:
     restart: unless-stopped
 
 
-  # ── Open Policy Agent ──────────────────────────────────────────
+  # Open Policy Agent
 
   opa:
 
@@ -1286,10 +1309,8 @@ services:
     healthcheck:
       test:
         [
-          "CMD",
-          "curl",
-          "-f",
-          "http://localhost:8181/health"
+          "CMD-SHELL",
+          "wget -qO- http://localhost:8181/ || exit 1"
         ]
 
       interval: 10s
@@ -1299,7 +1320,7 @@ services:
     restart: unless-stopped
 
 
-  # ── LiteLLM AI Gateway ─────────────────────────────────────────
+  # LiteLLM AI Gateway
 
   litellm:
 
@@ -1319,11 +1340,13 @@ services:
     environment:
 
       # Credenciales proveedor LLM
+
       - OPENAI_API_KEY=${OPENAI_API_KEY:-dummy-key-for-mock}
 
       - LITELLM_MASTER_KEY=${LITELLM_MASTER_KEY:-sk-lab-master-key}
 
       # Mock backend opcional
+
       - OPENAI_API_BASE=${OPENAI_API_BASE:-}
 
     command:
@@ -1346,10 +1369,8 @@ services:
     healthcheck:
       test:
         [
-          "CMD",
-          "curl",
-          "-f",
-          "http://localhost:4000/health"
+          "CMD-SHELL",
+          "wget -qO- http://localhost:4000/health || exit 1"
         ]
 
       interval: 15s
@@ -1358,23 +1379,24 @@ services:
       start_period: 30s
 
     restart: unless-stopped
-'@ | Set-Content .\docker-compose.yml -Encoding UTF8
+'@ | Out-File .\docker-compose.yml -Encoding utf8
 ```
+
 
 **5.2** Si vas a usar el mock LLM, añadir `OPENAI_API_BASE` al `.env`:
 
-```bash
-# Añadir al archivo .env (si usas mock LLM)
-Add-Content `
-    -Path .env `
-    -Value "OPENAI_API_BASE=http://mock-llm:9090/v1" `
-    -Encoding UTF8
+```powershell id="x4m8qp"
+# Agregar variables al archivo .env
 
 Add-Content `
     -Path .env `
-    -Value "USE_MOCK_LLM=true" `
-    -Encoding UTF8
+    -Value "OPENAI_API_BASE=http://mock-llm:9090/v1"
+
+Add-Content `
+    -Path .env `
+    -Value "USE_MOCK_LLM=true"
 ```
+
 
 **5.3** Levantar el stack:
 
