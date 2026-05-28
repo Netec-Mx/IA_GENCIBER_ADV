@@ -913,10 +913,6 @@ if __name__ == "__main__":
 2. Ejecuta la Etapa 1:
 
 ```powershell id="q4m8ra"
-# Entrar a la carpeta del laboratorio
-
-Set-Location .\lab05
-
 
 # Ejecutar etapa 1 deteccion de secretos
 
