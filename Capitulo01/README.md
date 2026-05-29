@@ -30,7 +30,7 @@ En este laboratorio construirás una **matriz de riesgos priorizada** para un si
 
 ---
 
-## 4. Prerrequisitos
+## 4. Prerrequisitosz
 
 ### Conocimiento previo
 
